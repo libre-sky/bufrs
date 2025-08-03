@@ -76,7 +76,9 @@ impl Section for Section0 {
     }
 }
 
+#[cfg(test)]
 mod test {
+
     use crate::message::section::{Section, Section0};
 
     const TEST_BUFR: [u8; 231] = [

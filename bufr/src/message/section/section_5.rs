@@ -1,15 +1,9 @@
-use crate::message::section::Section;
+use crate::message::section::{InvalidSection, Section};
 
 /// Section5: Section 5 is the footer for a BUFR message.
 /// It validates that the end of the message is 7777
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Section5;
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum InvalidSection {
-    InvalidContent([u8; 4]),
-    InvalidLen(usize),
-}
 
 impl Section5 {
     fn len() -> usize {

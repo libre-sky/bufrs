@@ -1,17 +1,8 @@
 use std::u32;
 
-use crate::message::section::Section;
+use crate::message::section::{Section, error::InvalidSection};
 
 /// ReadError is the enumeration of possible errors encountered in section parsing.
-#[derive(Debug, Clone)]
-pub enum ReadError {
-    /// When the first 4 bytes of the message are not "BUFR"
-    NotBufr([u8; 4]),
-    /// Length is not 8 bytes
-    InvalidLen(usize),
-    /// Version is not currently supported
-    UnsupportedVersion(u8),
-}
 
 /// Section 0 is the first section of a BUFR message and has a fixed size of 8 bytes (octets).
 /// ## Serialized layout
@@ -60,7 +51,7 @@ impl Section0 {
 }
 
 impl Section for Section0 {
-    type Error = ReadError;
+    type Error = InvalidSection;
     fn len(&self) -> usize {
         Self::len()
     }

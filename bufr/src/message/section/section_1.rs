@@ -1,12 +1,10 @@
 use chrono::{DateTime, TimeZone, Utc};
 
-use crate::{dtype::U24, message::section::Section};
-
-#[derive(Debug, Clone)]
-pub enum InvalidSection {
-    InvalidLen(usize),
-    InvalidOptionalSpec(u8),
-}
+use crate::{
+    dtype::U24,
+    message::section::{InvalidSection, Section},
+    utils::bytes::BitIndex,
+};
 
 #[derive(Debug, Default, Clone)]
 pub struct Section1 {
@@ -85,14 +83,19 @@ impl Into<bool> for ContainsOptionalSection {
         }
     }
 }
-impl TryFrom<u8> for ContainsOptionalSection {
-    type Error = InvalidSection;
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
+impl From<bool> for ContainsOptionalSection {
+    fn from(value: bool) -> Self {
         match value {
-            0 => Ok(Self::No),
-            1 => Ok(Self::Yes),
-            v => Err(Self::Error::InvalidOptionalSpec(v)),
+            false => Self::No,
+            true => Self::Yes,
         }
+    }
+}
+
+impl From<u8> for ContainsOptionalSection {
+    fn from(value: u8) -> Self {
+        let v = BitIndex::One.mask(value);
+        v.into()
     }
 }
 
@@ -127,7 +130,7 @@ impl Section for Section1 {
         let origin_center_id = u16::from_be_bytes(buf[4..6].try_into().unwrap());
         let sub_center_id = u16::from_be_bytes(buf[6..8].try_into().unwrap());
         let sequence_number = buf[8];
-        let contains_optional_section: bool = ContainsOptionalSection::try_from(buf[9])?.into();
+        let contains_optional_section: bool = ContainsOptionalSection::from(buf[9]).into();
         let data_category = buf[10];
         let international_data_sub_category = buf[11];
         let local_sub_category = buf[12];

@@ -1,9 +1,14 @@
-pub struct Descriptor([u8; 2]);
-pub struct DescriptorImpl {
+pub struct DescriptorInner([u8; 2]);
+
+pub struct Descriptor {
     pub descriptor_type: Type,
     pub table_class: Class,
     pub element: u8,
 }
+pub struct ElementDescriptor {}
+pub struct ReplicationDescriptor {}
+pub struct OperatorDescriptor {}
+pub struct SequenceDescriptor {}
 
 pub enum Type {
     Element,
@@ -45,7 +50,7 @@ impl From<u8> for Type {
     }
 }
 
-impl Into<u16> for Descriptor {
+impl Into<u16> for DescriptorInner {
     fn into(self) -> u16 {
         u16::from_be_bytes(self.0)
     }

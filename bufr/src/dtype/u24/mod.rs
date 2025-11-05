@@ -1,10 +1,16 @@
+mod error;
+pub use error::Error;
+use std::fmt::Display;
+
 /// U24 is a uint consisting of 3 bytes
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct U24([u8; 3]);
 
-#[derive(Debug, Clone)]
-pub enum Error {
-    InvalidByteLength(usize),
+impl Display for U24 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let val: u32 = (*self).into();
+        val.fmt(f)
+    }
 }
 
 impl Into<u32> for U24 {
@@ -39,5 +45,21 @@ impl U24 {
         let mut b_rev = b;
         b_rev.reverse();
         Self(b_rev)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::dtype::{U24, u24::Error};
+
+    #[test]
+    fn new() {
+        let v0 = U24::new(&[1, 15, 3]).unwrap();
+        assert_eq!(
+            <U24 as Into<u32>>::into(v0),
+            (1u32 << 16) + (15u32 << 8) + 3u32
+        );
+
+        assert_eq!(Error::InvalidByteLength(1), U24::new(&[123]).unwrap_err());
     }
 }

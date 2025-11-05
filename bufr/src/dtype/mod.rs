@@ -1,3 +1,3 @@
-pub mod u24;
+mod u24;
 
-pub use u24::U24;
+pub use u24::{Error, U24};

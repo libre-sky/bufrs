@@ -4,13 +4,17 @@ mod section_0;
 mod section_1;
 mod section_2;
 mod section_3;
+mod section_4;
 mod section_5;
 pub use error::InvalidSection;
 pub use section_0::Section0;
 pub use section_1::Section1;
+pub use section_2::Section2;
+pub use section_3::Section3;
+pub use section_4::Section4;
 pub use section_5::Section5;
 
-use crate::dtype::U24;
+use crate::{dtype::U24, message::Message};
 
 pub trait Section
 where
@@ -19,7 +23,7 @@ where
 {
     type Error;
     fn len(&self) -> usize;
-    fn read(buf: &[u8]) -> Result<Self, Self::Error>;
+    fn read(buf: &[u8], msg: &Message) -> Result<Self, Self::Error>;
 
     fn read_length(buf: &[u8]) -> Result<U24, InvalidSection> {
         if buf.len() < 3 {

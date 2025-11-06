@@ -1,6 +1,9 @@
 use crate::{
     dtype::U24,
-    message::section::{InvalidSection, Section},
+    message::{
+        Message,
+        section::{InvalidSection, Section},
+    },
 };
 
 #[derive(Debug, Clone)]
@@ -14,7 +17,7 @@ impl Section for Section2 {
         self.length.clone().into()
     }
 
-    fn read(buf: &[u8]) -> Result<Self, Self::Error> {
+    fn read(buf: &[u8], _: &Message) -> Result<Self, Self::Error> {
         if buf.len() < 3 {
             Err(Self::Error::InvalidLen(buf.len()))
         } else {

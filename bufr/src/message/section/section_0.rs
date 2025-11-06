@@ -1,6 +1,9 @@
 use std::u32;
 
-use crate::message::section::{Section, error::InvalidSection};
+use crate::message::{
+    Message,
+    section::{Section, error::InvalidSection},
+};
 
 /// ReadError is the enumeration of possible errors encountered in section parsing.
 
@@ -56,7 +59,7 @@ impl Section for Section0 {
         Self::len()
     }
 
-    fn read(buf: &[u8]) -> Result<Self, Self::Error> {
+    fn read(buf: &[u8], _: &Message) -> Result<Self, Self::Error> {
         Self::validate_length(buf)?;
         Self::validate_protocol(buf)?;
 
@@ -70,7 +73,10 @@ impl Section for Section0 {
 #[cfg(test)]
 mod test {
 
-    use crate::message::section::{Section, Section0};
+    use crate::message::{
+        Message,
+        section::{Section, Section0},
+    };
 
     const TEST_BUFR: [u8; 231] = [
         0x42, 0x55, 0x46, 0x52, 0x0, 0x0, 0xe7, 0x3, 0x0, 0x0, 0x16, 0x0, 0x0, 0x62, 0x0, 0x0, 0x1,
@@ -92,7 +98,8 @@ mod test {
     ];
     #[test]
     fn read_section() {
-        let res = <Section0 as Section>::read(&TEST_BUFR[..]).unwrap();
+        let msg = Message::default();
+        let res = <Section0 as Section>::read(&TEST_BUFR[..], &msg).unwrap();
         assert_eq!(res.msg_size, 231);
         assert_eq!(res.version, 3);
     }

@@ -1,8 +1,11 @@
-use crate::message::section::{InvalidSection, Section};
+use crate::message::{
+    Message,
+    section::{InvalidSection, Section},
+};
 
 /// Section5: Section 5 is the footer for a BUFR message.
 /// It validates that the end of the message is 7777
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Section5;
 
 impl Section5 {
@@ -26,7 +29,7 @@ impl Section for Section5 {
         Self::len()
     }
 
-    fn read(buf: &[u8]) -> Result<Self, Self::Error> {
+    fn read(buf: &[u8], _: &Message) -> Result<Self, Self::Error> {
         let s = Section5;
         match s.validate_length(buf) {
             Ok(_) => {
@@ -45,12 +48,12 @@ mod test {
     #[test]
     fn valid_content() {
         let buf = &b"7777"[..];
-        Section5::read(buf).unwrap();
+        Section5::read(buf, &Default::default()).unwrap();
     }
     #[test]
     fn invalid_content() {
         let buf = &b"6969"[..];
-        let err = Section5::read(buf).unwrap_err();
+        let err = Section5::read(buf, &Default::default()).unwrap_err();
         assert_eq!(
             err,
             InvalidSection::InvalidContent(buf[..4].try_into().unwrap())
@@ -59,7 +62,7 @@ mod test {
     #[test]
     fn invalid_length() {
         let buf = &b"696"[..];
-        let err = Section5::read(buf).unwrap_err();
+        let err = Section5::read(buf, &Default::default()).unwrap_err();
         assert_eq!(err, InvalidSection::InvalidLen(buf.len()));
     }
 }

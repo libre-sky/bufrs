@@ -2,7 +2,10 @@ use chrono::{DateTime, TimeZone, Utc};
 
 use crate::{
     dtype::U24,
-    message::section::{InvalidSection, Section},
+    message::{
+        Message,
+        section::{InvalidSection, Section},
+    },
     utils::bytes::BitIndex,
 };
 
@@ -110,7 +113,7 @@ impl Section1 {
                     Ok(v)
                 }
             }
-            Err(_) => Err(<Self as Section>::Error::InvalidLen(b.len())),
+            Err(e) => Err(<Self as Section>::Error::ParseError(format!("{}", e))),
         }
     }
 }
@@ -120,10 +123,10 @@ impl Section for Section1 {
     fn len(&self) -> usize {
         self.length.clone().into()
     }
-    fn read(buf: &[u8]) -> Result<Self, Self::Error> {
+    fn read(buf: &[u8], _: &Message) -> Result<Self, Self::Error> {
         let length = Self::read_len(buf)?;
         let l: usize = length.clone().into();
-        if l < 23usize {
+        if l < 22usize {
             return Err(Self::Error::InvalidLen(length.into()));
         }
         let master_table = buf[3];

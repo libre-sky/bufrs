@@ -1,6 +1,7 @@
 /// Helper for working with bufr bits.
 /// BUFR specification indexes bits from most significant to least significant,
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[allow(dead_code)]
 pub(crate) enum BitIndex {
     One,
     Two,
